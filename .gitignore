@@ -1,0 +1,47 @@
+# Root-level ignores
+node_modules/
+dist/
+.vscode/
+.DS_Store
+*.log
+*.local
+.env
+.env.local
+*.swp
+.idea/
+.nyc_output/
+coverage/
+temp/
+tmp/
+yarn-error.log
+pnpm-lock.yaml
+*.tsbuildinfo
+!.gitkeep
+
+# Ignore system files
+Thumbs.db
+desktop.ini
+
+# =============================
+# Frontend-specific ignores
+# =============================
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+/frontend/.eslintcache
+/frontend/.turbo/
+/frontend/.idea/
+/frontend/.DS_Store
+/frontend/*.log
+/frontend/*.local
+
+# =============================
+# Backend-specific ignores
+# =============================
+/backend/node_modules/
+/backend/dist/
+/backend/.turbo/
+/backend/.idea/
+/backend/.DS_Store
+/backend/*.log
+/backend/*.local
