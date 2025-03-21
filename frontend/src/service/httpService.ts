@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance } from "axios";
+import { HttpMethod } from '@/types/httpMethod';
 
 // Environment variables
 const TENANT_GATEWAY = import.meta.env.VITE_TENANT_BASE_URL;
@@ -10,7 +11,7 @@ const createApiInstance = (baseURL: string): AxiosInstance => {
 
   instance.interceptors.request.use(
     (config) => {
-      // Put down here your JWT. For testing purposes only.
+      // Put down your JWT here
       const token = ''
       if (token) {
         config.headers.set("Authorization", `Bearer ${token}`);
@@ -31,7 +32,7 @@ const platformGateway = createApiInstance(PLATFORM_GATEWAY);
 // Function to handle API requests dynamically
 const request = async <T>(
   api: AxiosInstance,
-  method: "get" | "post" | "put" | "delete",
+  method: HttpMethod,
   endpoint: string,
   data?: unknown,
   params?: Record<string, unknown>
@@ -53,20 +54,20 @@ const request = async <T>(
 // Export API services
 export const tenantApi = {
   get: <T>(endpoint: string, params?: Record<string, unknown>) =>
-    request<T>(tenantGateway, "get", endpoint, undefined, params),
+    request<T>(tenantGateway, HttpMethod.GET, endpoint, undefined, params),
   post: <T>(endpoint: string, data?: unknown) =>
-    request<T>(tenantGateway, "post", endpoint, data),
+    request<T>(tenantGateway, HttpMethod.POST, endpoint, data),
   put: <T>(endpoint: string, data?: unknown) =>
-    request<T>(tenantGateway, "put", endpoint, data),
-  delete: <T>(endpoint: string) => request<T>(tenantGateway, "delete", endpoint),
+    request<T>(tenantGateway, HttpMethod.PUT, endpoint, data),
+  delete: <T>(endpoint: string) => request<T>(tenantGateway, HttpMethod.DELETE, endpoint),
 };
 
 export const platformApi = {
   get: <T>(endpoint: string, params?: Record<string, unknown>) =>
-    request<T>(platformGateway, "get", endpoint, undefined, params),
+    request<T>(platformGateway, HttpMethod.GET, endpoint, undefined, params),
   post: <T>(endpoint: string, data?: unknown) =>
-    request<T>(platformGateway, "post", endpoint, data),
+    request<T>(platformGateway, HttpMethod.POST, endpoint, data),
   put: <T>(endpoint: string, data?: unknown) =>
-    request<T>(platformGateway, "put", endpoint, data),
-  delete: <T>(endpoint: string) => request<T>(platformGateway, "delete", endpoint),
+    request<T>(platformGateway, HttpMethod.PUT, endpoint, data),
+  delete: <T>(endpoint: string) => request<T>(platformGateway, HttpMethod.DELETE, endpoint),
 };

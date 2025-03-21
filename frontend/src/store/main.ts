@@ -4,13 +4,11 @@ import { defineStore } from 'pinia';
 export const useMainStore = defineStore('main', {
 
     state: () => ({
-        organizationId: ''
+        organizationId: '123'
     }),
     actions: {
         setOrganizationId ( orgId: string ) {
-            this.organizationId = orgId;   
+            this.organizationId = orgId;
         }
     }
 })
-
-
