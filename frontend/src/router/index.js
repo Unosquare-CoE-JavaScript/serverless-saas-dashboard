@@ -131,6 +131,11 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
+        },
+        {
+            path: '/auth/callback',
+            name: 'Callback',
+            component: () => import('@/modules/auth/Callback.vue')
         }
     ]
 });
