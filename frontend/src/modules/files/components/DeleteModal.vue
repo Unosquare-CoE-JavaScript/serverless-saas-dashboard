@@ -13,7 +13,6 @@ watch(
   () => props.open,
   (value) => {
     show.value = value;
-    console.log('value for prop open:', value);
   },
 );
 // Methods
@@ -41,6 +40,7 @@ watch(
       />
       <Button
         label="Yes"
+        :loading="loading"
         icon="pi pi-check"
         @click="fileId && emits('modal:delete', fileId)"
       />

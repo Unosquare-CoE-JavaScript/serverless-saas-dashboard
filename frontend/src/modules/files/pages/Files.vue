@@ -61,7 +61,6 @@ const openModal = (show = true): void => {
 };
 
 const onSave = (...rest: [Blob, Partial<_File>]): void => {
-  console.log('rest', rest);
   const [fileToUpload, file] = rest;
   if (fileToUpload) {
     onSaveFile(...rest);
@@ -74,7 +73,6 @@ const onSave = (...rest: [Blob, Partial<_File>]): void => {
 const onDeleteFile = async (fileId: string): Promise<void> => {
   submitted.value = true;
   setLoading(true);
-  console.log('fileId', fileId);
 
   await deleteFile(organizationId, fileId);
 
@@ -103,7 +101,6 @@ const onDeleteFile = async (fileId: string): Promise<void> => {
 const onUpdateFile = async (file: Partial<_File>): Promise<void> => {
   submitted.value = true;
   setLoading(true);
-  console.log('file', file);
 
   await updateFile(organizationId, file);
 
@@ -137,9 +134,6 @@ const onSaveFile = async (fileToUpload: Blob, file: Partial<_File>) => {
     file_content: null,
   };
 
-  console.log('fileToUpload', fileToUpload);
-  console.log('file', file);
-
   try {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -149,11 +143,8 @@ const onSaveFile = async (fileToUpload: Blob, file: Partial<_File>) => {
         typeof e.target.result === 'string'
       );
 
-      console.log('validEvent', validEvent);
-
       const data = validEvent ? e.target.result.split(',')[1] : '';
 
-      console.log('data', data);
       payload.file_content = data;
 
       await createFile(organizationId, payload);
@@ -178,13 +169,9 @@ const onSaveFile = async (fileToUpload: Blob, file: Partial<_File>) => {
           life: 6000,
         });
       }
-
-      // console.log('payload', payload);
     };
 
     reader.readAsDataURL(fileToUpload);
-
-    //console.log('payload', payload);
   } catch (error) {
     console.log('error', error);
     setLoading(false);

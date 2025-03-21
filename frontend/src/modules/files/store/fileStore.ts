@@ -1,11 +1,6 @@
 import { defineStore } from 'pinia';
-import {
-  createFile as createFileFn,
-  deleteFile as deleteFileFn,
-  getFiles,
-  updateFile as updateFileFn,
-} from '@/modules/files/services/FileService';
-import type { _File, FileCreatePayload } from '@/types/File';
+import { tenantApi } from '@/service/httpService';
+import type { _File, FileApiResponse, FileCreatePayload } from '@/types/File';
 import { AxiosError } from 'axios';
 
 interface FileState {
@@ -28,13 +23,14 @@ export const useFileStore = defineStore('file', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await getFiles(organizationId);
+        const response = await tenantApi.get<FileApiResponse<_File[]>>(
+          `${import.meta.env.VITE_API_BASE_URL}/organizations/${organizationId}/files`,
+        );
         this.files = response.data;
       } catch (err) {
         if (err instanceof AxiosError || err instanceof Error)
           this.error = err.message;
         if (typeof err === 'string') this.error = err;
-        console.log(err);
         console.log(this.error);
       } finally {
         this.loading = false;
@@ -45,14 +41,16 @@ export const useFileStore = defineStore('file', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await createFileFn(organizationId, payload);
+        const response = await tenantApi.post<FileApiResponse<_File>>(
+          `${import.meta.env.VITE_API_BASE_URL}/organizations/${organizationId}/files`,
+          payload,
+        );
         this.files = [...this.files, response.data];
         this.currentFile = null;
       } catch (err) {
         if (err instanceof AxiosError || err instanceof Error)
           this.error = err.message;
         if (typeof err === 'string') this.error = err;
-        console.log(err);
         console.log(this.error);
       } finally {
         this.loading = false;
@@ -63,7 +61,10 @@ export const useFileStore = defineStore('file', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await updateFileFn(organizationId, file);
+        const response = await tenantApi.put<FileApiResponse<_File>>(
+          `${import.meta.env.VITE_API_BASE_URL}/organizations/${organizationId}/files/${file.file_id}`,
+          file,
+        );
         const updatedFile = response.data;
         this.files = this.files.map((file) => {
           if (file.file_id === updatedFile.file_id) {
@@ -76,7 +77,6 @@ export const useFileStore = defineStore('file', {
         if (err instanceof AxiosError || err instanceof Error)
           this.error = err.message;
         if (typeof err === 'string') this.error = err;
-        console.log(err);
         console.log(this.error);
       } finally {
         this.loading = false;
@@ -87,16 +87,16 @@ export const useFileStore = defineStore('file', {
       this.loading = true;
       this.error = null;
       try {
-        const response = await deleteFileFn(organizationId, fileId);
+        await tenantApi.delete<FileApiResponse<_File>>(
+          `${import.meta.env.VITE_API_BASE_URL}/organizations/${organizationId}/files/${fileId}`,
+        );
         this.files = this.files.filter((file) => file.file_id !== fileId);
 
-        console.log(response);
         this.currentFile = null;
       } catch (err) {
         if (err instanceof AxiosError || err instanceof Error)
           this.error = err.message;
         if (typeof err === 'string') this.error = err;
-        console.log(err);
         console.log(this.error);
       } finally {
         this.loading = false;

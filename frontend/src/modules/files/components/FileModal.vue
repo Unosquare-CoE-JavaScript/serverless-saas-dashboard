@@ -28,13 +28,12 @@ watch(
   () => props.open,
   (value) => {
     show.value = value;
-    console.log('value for prop open:', value);
   },
 );
 
 watch(
   () => props.file,
-  (value) => {
+  () => {
     if (props.file?.file_name) processedFile.value = props.file;
     else
       processedFile.value = {
@@ -44,14 +43,12 @@ watch(
         file_private: false,
         updated_at: '',
       };
-    console.log('value for prop file:', value);
   },
   { deep: true },
 );
 
 // Methods
 const onFileSelect = (e: FileUploadSelectEvent) => {
-  console.log('files', e.files);
   const [newfile] = e.files;
   fileToUpload.value = newfile;
   processedFile.value = {
@@ -59,14 +56,10 @@ const onFileSelect = (e: FileUploadSelectEvent) => {
     file_type: newfile.type,
     file_size: parseInt(newfile.size),
     file_private: false,
-    //updated_at: newfile.lastModified,
   };
 };
 
-const getFileURL = (file: File) => {
-  console.log(file);
-  return URL.createObjectURL(file);
-};
+const getFileURL = (file: File) => URL.createObjectURL(file);
 </script>
 <template>
   <Dialog
@@ -175,7 +168,12 @@ const getFileURL = (file: File) => {
         label="Save"
         :loading="loading"
         icon="pi pi-check"
-        @click="emits('modal:save', fileToUpload, processedFile)"
+        @click="
+          () => {
+            emits('modal:save', fileToUpload, processedFile);
+            fileToUpload = null;
+          }
+        "
       />
     </template>
   </Dialog>
