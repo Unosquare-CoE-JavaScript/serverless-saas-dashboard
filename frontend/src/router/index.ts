@@ -1,5 +1,6 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/store/auth'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -139,5 +140,18 @@ const router = createRouter({
         }
     ]
 });
+
+// Add navigation guard
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  // Check if user is authenticated
+  if (!authStore.isAuthenticated && to.name !== 'Callback') {
+    // Redirect to login if not authenticated
+    window.location.href = authStore.loginURL
+    return
+  }
+  
+  next()
+})
 
 export default router;

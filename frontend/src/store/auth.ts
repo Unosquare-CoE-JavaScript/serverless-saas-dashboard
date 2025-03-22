@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import type { User } from '@/types';
+import { isTokenExpired } from '@/modules/auth/utils'
 
 interface AuthProps {
     accessToken: string | null
     refreshToken: string | null,
     idToken: string | null
-    isAuthenticated: boolean,
     user: User
 }
 
@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('auth', {
         accessToken: localStorage.getItem('access_token') ?? null,
         refreshToken: null,
         idToken: null,
-        isAuthenticated: false,
         user: {} as User
     }),
     actions: {
@@ -37,9 +36,7 @@ export const useAuthStore = defineStore('auth', {
                 this.accessToken = parsedResponse.access_token,
                 this.refreshToken = parsedResponse.refresh_token,
                 this.idToken = parsedResponse.id_token
-                this.isAuthenticated = true
                 localStorage.setItem('access_token', this.accessToken!)
-                console.log('Tokens successfully retrieved :) ');
             } catch (error) {
                 console.error(error)
             }
@@ -48,7 +45,6 @@ export const useAuthStore = defineStore('auth', {
             const domain = import.meta.env.VITE_USER_POOL_DOMAIN
             const clientId = import.meta.env.VITE_OIDC_CLIENT_ID
             const logoutUrl = `${domain}/logout?client_id=${clientId}&logout_uri=${this.loginURL}`;
-            this.isAuthenticated = false
             localStorage.clear()
             window.location.href = logoutUrl;
         },
@@ -66,10 +62,10 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error(error)
             }
-        }
+        },
     },
     getters: {
-        loginURL() {
+        loginURL(): string {
             const domain = import.meta.env.VITE_USER_POOL_DOMAIN
             const params = new URLSearchParams({
                 client_id: import.meta.env.VITE_OIDC_CLIENT_ID,
@@ -78,6 +74,10 @@ export const useAuthStore = defineStore('auth', {
                 scope: 'email openid phone profile'
             })
             return `${domain}/login/continue?${params}`
+        },
+        isAuthenticated(): boolean {
+            // Return true if user has valid token
+            return !!this.accessToken && !isTokenExpired(this.accessToken)
         }
     }
 })
