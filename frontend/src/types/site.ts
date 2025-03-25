@@ -6,5 +6,7 @@ export interface Site {
     site_url: string
     site_status: string
     site_keyword: string
-    site_mailers: string[]
+    site_mailers: string[],
+    site_logo_url: string,
+    site_logo?: string
 };

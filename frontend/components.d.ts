@@ -14,6 +14,7 @@ declare module 'vue' {
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
     FeaturesWidget: typeof import('./src/components/landing/FeaturesWidget.vue')['default']
+    FileUpload: typeof import('primevue/fileupload')['default']
     FloatingConfigurator: typeof import('./src/components/FloatingConfigurator.vue')['default']
     FooterWidget: typeof import('./src/components/landing/FooterWidget.vue')['default']
     HeroWidget: typeof import('./src/components/landing/HeroWidget.vue')['default']

@@ -42,6 +42,11 @@
                     </template>
                 </Column>
                 <Column field="site_keyword" header="Site Keyword" sortable style="min-width: 8rem"></Column>
+                <Column header="Site Logo">
+                    <template #body="slotProps">
+                        <img :src="slotProps.data.site_logo_url" alt="Site Logo" class="rounded" style="width: 64px" />
+                    </template>
+                </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editSite(slotProps.data)" />
@@ -86,6 +91,34 @@
                     <MultiSelect  id="siteMailers" v-model="site.site_mailers" :options="mailers" placeholder="Select mailers" required="true" :invalid="submitted && !site.site_mailers.length" fluid />
                     <small v-if="submitted && !site.site_mailers.length" class="text-red-500">At least 1 mailer is required.</small>
                 </div>
+
+                <div class="flex flex-col gap-4">
+                    <label for="site_image" class="block font-bold">Site Logo</label>
+
+                    <div class="flex items-center gap-4">
+                        <!-- Image Preview -->
+                        <div class="relative w-32 h-32 flex items-center justify-center border border-gray-300 rounded-lg overflow-hidden bg-gray-50">
+                            <img v-if="src || site.site_logo_url" :src="src || site.site_logo_url" alt="Site Logo" class="w-full h-full object-cover" />
+                            <span v-else class="text-gray-400">No Image</span>
+                            
+                            <!-- Remove Image Button -->
+                            <button v-if="src" @click="clearImage" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                                <i class="pi pi-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <FileUpload
+                            mode="basic"
+                            @select="onFileSelect"
+                            customUpload
+                            auto
+                            :accept="'image/*'"
+                            chooseLabel="Browse"
+                            class="p-button p-button-outlined"
+                        />
+                    </div>
+                </div>
             </div>
 
             <template #footer>
@@ -116,6 +149,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
 import { useSiteStore } from '@/store/siteStore'
 import { type Site } from '@/types/site'
+import { type FileUploadSelectEvent } from 'primevue/fileupload';
 
 const siteStore = useSiteStore()
 
@@ -126,6 +160,7 @@ onMounted(async () => {
 const sites = computed(() => siteStore.sites as Site[]);
 
 const toast = useToast();
+const src = ref<any>(null);
 const dt = ref<any>();
 const siteDialog = ref<boolean>(false);
 const deleteSiteDialog = ref<boolean>(false);
@@ -144,6 +179,27 @@ const mailers = ref<string[]>([
     'oscar.lara@unosquare.com',
     'pablo.maestre@unosquare.com',
 ]);
+
+function onFileSelect(event: FileUploadSelectEvent): void {
+    const fileInput = event.files[0];
+    if (fileInput) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64String = e.target?.result as string;
+
+            // Ensure the string includes the proper data prefix
+            if (!base64String.startsWith("data:image")) {
+                console.error("Invalid Base64 string for image");
+                return;
+            }
+
+            src.value = base64String;
+            site.value.site_logo = base64String;
+        };
+        reader.readAsDataURL(fileInput);
+    }
+}
+
 function openNew(): void {
     site.value = {} as Site;
     submitted.value = false;
@@ -153,6 +209,7 @@ function openNew(): void {
 function hideDialog(): void {
     siteDialog.value = false;
     submitted.value = false;
+    src.value = null
 };
 
 async function saveSite(): Promise<void> {
@@ -205,4 +262,9 @@ function getSiteStatusLabel(status: string): string {
 function exportCSV(): void {
     dt.value.exportCSV();
 };
+
+function clearImage(): void {
+    src.value = null;
+    site.value.site_logo = '';
+}
 </script>
