@@ -100,6 +100,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/Sites.vue')
                 },
                 {
+                    path: '/pages/organizations',
+                    name: 'organizations',
+                    component: () => import('@/views/pages/Organizations.vue')
+                },
+                {
                     path: '/pages/crud',
                     name: 'crud',
                     component: () => import('@/views/pages/Crud.vue')
