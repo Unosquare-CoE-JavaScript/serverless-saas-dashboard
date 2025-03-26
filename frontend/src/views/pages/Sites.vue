@@ -7,19 +7,20 @@
                 </template>
 
                 <template #end>
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
+                    <Button v-if="sites.length" label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
                 </template>
             </Toolbar>
 
             <DataTable
                 ref="dt"
+                :loading="siteStore.loading"
                 :value="sites"
                 :paginator="true"
                 :rows="10"
                 :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} sites"
             >
                 <template #header>
                     <div class="flex flex-wrap gap-2 items-center justify-between">
@@ -42,6 +43,11 @@
                     </template>
                 </Column>
                 <Column field="site_keyword" header="Site Keyword" sortable style="min-width: 8rem"></Column>
+                <Column header="Site Logo">
+                    <template #body="slotProps">
+                        <img :src="slotProps.data.site_logo_url" alt="Site Logo" class="rounded" style="width: 64px" />
+                    </template>
+                </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editSite(slotProps.data)" />
@@ -86,11 +92,36 @@
                     <MultiSelect  id="siteMailers" v-model="site.site_mailers" :options="mailers" placeholder="Select mailers" required="true" :invalid="submitted && !site.site_mailers.length" fluid />
                     <small v-if="submitted && !site.site_mailers.length" class="text-red-500">At least 1 mailer is required.</small>
                 </div>
+
+                <div class="flex flex-col gap-4">
+                    <label for="site_image" class="block font-bold">Site Logo</label>
+
+                    <div class="flex items-center gap-4">
+                        <div class="relative w-32 h-32 flex items-center justify-center border border-gray-300 rounded-lg overflow-hidden bg-gray-50">
+                            <img v-if="src || site.site_logo_url" :src="src || site.site_logo_url" alt="Site Logo" class="w-full h-full object-cover" />
+                            <span v-else class="text-gray-400">No Image</span>
+                            
+                            <button v-if="src" @click="clearImage" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
+                                <i class="pi pi-times"></i>
+                            </button>
+                        </div>
+
+                        <FileUpload
+                            mode="basic"
+                            @select="onFileSelect"
+                            customUpload
+                            auto
+                            :accept="'image/*'"
+                            chooseLabel="Browse"
+                            class="p-button p-button-outlined"
+                        />
+                    </div>
+                </div>
             </div>
 
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Save" icon="pi pi-check" @click="saveSite" />
+                <Button label="Cancel" icon="pi pi-times" text :disabled="siteStore.loading" @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" :loading="siteStore.loading" @click="saveSite" />
             </template>
         </Dialog>
 
@@ -103,8 +134,8 @@
                 >
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteSiteDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteSite" />
+                <Button label="No" icon="pi pi-times" text :disabled="siteStore.loading" @click="deleteSiteDialog = false" />
+                <Button label="Yes" icon="pi pi-check" :loading="siteStore.loading" @click="deleteSite" />
             </template>
         </Dialog>
     </div>
@@ -116,6 +147,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref, computed } from 'vue';
 import { useSiteStore } from '@/store/siteStore'
 import { type Site } from '@/types/site'
+import { type FileUploadSelectEvent } from 'primevue/fileupload';
 
 const siteStore = useSiteStore()
 
@@ -126,6 +158,7 @@ onMounted(async () => {
 const sites = computed(() => siteStore.sites as Site[]);
 
 const toast = useToast();
+const src = ref<any>(null);
 const dt = ref<any>();
 const siteDialog = ref<boolean>(false);
 const deleteSiteDialog = ref<boolean>(false);
@@ -144,6 +177,27 @@ const mailers = ref<string[]>([
     'oscar.lara@unosquare.com',
     'pablo.maestre@unosquare.com',
 ]);
+
+function onFileSelect(event: FileUploadSelectEvent): void {
+    const fileInput = event.files[0];
+    if (fileInput) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64String = e.target?.result as string;
+
+            // Ensure the string includes the proper data prefix
+            if (!base64String.startsWith("data:image")) {
+                console.error("Invalid Base64 string for image");
+                return;
+            }
+
+            src.value = base64String;
+            site.value.site_logo = base64String;
+        };
+        reader.readAsDataURL(fileInput);
+    }
+}
+
 function openNew(): void {
     site.value = {} as Site;
     submitted.value = false;
@@ -153,6 +207,7 @@ function openNew(): void {
 function hideDialog(): void {
     siteDialog.value = false;
     submitted.value = false;
+    src.value = null
 };
 
 async function saveSite(): Promise<void> {
@@ -205,4 +260,9 @@ function getSiteStatusLabel(status: string): string {
 function exportCSV(): void {
     dt.value.exportCSV();
 };
+
+function clearImage(): void {
+    src.value = null;
+    site.value.site_logo = '';
+}
 </script>

@@ -78,6 +78,11 @@ const model = ref([
                 label: 'Sites',
                 icon: 'pi pi-fw pi-globe',
                 to: '/pages/sites'
+            },
+            {
+                label: 'Organizations',
+                icon: 'pi pi-fw pi-building',
+                to: '/pages/organizations'
             }
         ]
     },

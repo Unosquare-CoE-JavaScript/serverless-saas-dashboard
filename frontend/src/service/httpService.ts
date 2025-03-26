@@ -12,7 +12,7 @@ const createApiInstance = (baseURL: string): AxiosInstance => {
   instance.interceptors.request.use(
     (config) => {
       // Put down your JWT here
-      const token = ''
+      const token = 'eyJraWQiOiJKeUcwUHFldWtZdmtjdjNoaGhwMjFDVXVtR0NKS3VFd0VMYnlsN2JvS2s0PSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI2MThiMjVkMC01MGIxLTcwZGQtZDJiZC04NTU0NGYwM2UyYTkiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9OdWpIRlluZ00iLCJjbGllbnRfaWQiOiIzZ2FwdjlrZHZvZTk3dDBqZGtjdWo3bHFhYiIsIm9yaWdpbl9qdGkiOiJkNDE5Zjk2Ni1kMzYwLTRjZDQtYjc4Mi1iYTBjZGJjYmUxNzYiLCJldmVudF9pZCI6IjEyMjAzYjcxLTdjYjItNGI5ZS04YTgwLTJiZWRkNzQyZGY0YSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE3NDMwMTI2NTMsImV4cCI6MTc0MzAxNjI1MywiaWF0IjoxNzQzMDEyNjUzLCJqdGkiOiJhZWRkM2M0Zi01NDk1LTQxMDEtYjYzMS0wOTQ4ZTUxNWQyZTgiLCJ1c2VybmFtZSI6IjYxOGIyNWQwLTUwYjEtNzBkZC1kMmJkLTg1NTQ0ZjAzZTJhOSJ9.nRVfRzja3yQFj3qG2yTT8zmOh1pmL6tHj5UhdYHOicU8wAlgPB1RRPB1M-R5IInzPBpiox3z9iPUUn4MCU9DXJ06gSZcRMet8SCti2h-v7k6ubPfDgoGk8IU-1Z8DofR5fl0QKt2JBIHnDFm_DBtsox6Ln_m7ep_75QFKzJXEUgNUIk1ZVH7jqAIDeoAwfqDOn0tu09l4MB0o9qMqancuhW-oHSZY2lMLf1uvTg9rVOBEo4jAhd7vRNVWkF4TnJfK_PpPLwj1ZxvVzdktBixtHgRZcUItr-tiZEILJiTjC5t0vPIpK1d6Y9f38oYG2DqLnutKkgHwCQg3JTd65FG1w'
       if (token) {
         config.headers.set("Authorization", `Bearer ${token}`);
         config.headers.set("Accept", "application/json");
