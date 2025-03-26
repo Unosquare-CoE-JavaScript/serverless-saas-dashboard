@@ -7,12 +7,13 @@
                 </template>
 
                 <template #end>
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
+                    <Button v-if="organizations.length" label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
                 </template>
             </Toolbar>
 
             <DataTable
                 ref="dt"
+                :loading="organizationStore.loading"
                 :value="organizations"
                 :paginator="true"
                 :rows="10"
@@ -60,8 +61,8 @@
             </div>
 
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Save" icon="pi pi-check" @click="saveOrganization" />
+                <Button label="Cancel" icon="pi pi-times" text :disabled="organizationStore.loading" @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" :loading="organizationStore.loading" @click="saveOrganization" />
             </template>
         </Dialog>
 
@@ -74,8 +75,8 @@
                 >
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteOrganizationDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteOrganization" />
+                <Button label="No" icon="pi pi-times" text :disabled="organizationStore.loading" @click="deleteOrganizationDialog = false" />
+                <Button label="Yes" icon="pi pi-check" :loading="organizationStore.loading" @click="deleteOrganization" />
             </template>
         </Dialog>
     </div>

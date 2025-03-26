@@ -7,12 +7,13 @@
                 </template>
 
                 <template #end>
-                    <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
+                    <Button v-if="sites.length" label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV()" />
                 </template>
             </Toolbar>
 
             <DataTable
                 ref="dt"
+                :loading="siteStore.loading"
                 :value="sites"
                 :paginator="true"
                 :rows="10"
@@ -96,18 +97,15 @@
                     <label for="site_image" class="block font-bold">Site Logo</label>
 
                     <div class="flex items-center gap-4">
-                        <!-- Image Preview -->
                         <div class="relative w-32 h-32 flex items-center justify-center border border-gray-300 rounded-lg overflow-hidden bg-gray-50">
                             <img v-if="src || site.site_logo_url" :src="src || site.site_logo_url" alt="Site Logo" class="w-full h-full object-cover" />
                             <span v-else class="text-gray-400">No Image</span>
                             
-                            <!-- Remove Image Button -->
                             <button v-if="src" @click="clearImage" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
                                 <i class="pi pi-times"></i>
                             </button>
                         </div>
 
-                        <!-- Upload Button -->
                         <FileUpload
                             mode="basic"
                             @select="onFileSelect"
@@ -122,8 +120,8 @@
             </div>
 
             <template #footer>
-                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Save" icon="pi pi-check" @click="saveSite" />
+                <Button label="Cancel" icon="pi pi-times" text :disabled="siteStore.loading" @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" :loading="siteStore.loading" @click="saveSite" />
             </template>
         </Dialog>
 
@@ -136,8 +134,8 @@
                 >
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteSiteDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteSite" />
+                <Button label="No" icon="pi pi-times" text :disabled="siteStore.loading" @click="deleteSiteDialog = false" />
+                <Button label="Yes" icon="pi pi-check" :loading="siteStore.loading" @click="deleteSite" />
             </template>
         </Dialog>
     </div>
