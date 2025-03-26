@@ -95,6 +95,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/Empty.vue')
                 },
                 {
+                    path: '/pages/sites',
+                    name: 'sites',
+                    component: () => import('@/views/pages/Sites.vue')
+                },
+                {
                     path: '/pages/crud',
                     name: 'crud',
                     component: () => import('@/views/pages/Crud.vue')
